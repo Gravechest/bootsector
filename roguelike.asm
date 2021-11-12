@@ -3,67 +3,62 @@
 
 mov    ax,h0003
 int    h10
-mov    ax,hb800
-mov    ds,ax
-mov    es,ax
+mov    cx,h2607
+mov    ah,1
+int    h10
+push   hb800
+pop    ds
+mov    di,950
 mov    ax,h0740
-stosw
-mov    cx,1999
-mov    ax,h0723
-rep    stosw
-xor    di,di
+mov    bx,h06f0
+mov    *bx,ax
+mov    *h1000,bx
 
-%label L06
-mov    cx,2000
-lodsw  
-cmp    al,h23
-je     L00
-loop   L07
-pop    di
-mov    al,h40
-stosw
-xor    di,di
-xor    si,si
-jmp    L06
-
-%label L07
-stosw
-jmp    L06
-
-%label L00
+%label inp
 hlt
-in     h60
-cmp    h11
-je     L01
-cmp    h20
-je     L02
-cmp    h1e
-je     L03
-cmp    h1f
-je     L04
+in     al,h60
+cmp    al,dl
+je     inp
+xor    dx,dx
+cmp    al,h11
+je     wkey
+cmp    al,h20
+je     dkey
+cmp    al,h1e
+je     akey
+cmp    al,h1f
+je     skey
+jmp    inp
+
+%label wkey
+mov    dx,hff60
 jmp    L00
 
-%label L01
-mov    bl,160
-jmp    L05
+%label dkey
+mov    dx,2
+jmp    L00
 
-%label L02
-mov    bl,2
-jmp    L05
+%label skey
+mov    dx,160
+jmp    L00
 
-%label L03
-mov    bx,hff5f
-jmp    L05
+%label akey
+mov    dx,hfffe
 
-%label L04
-mov    bx,hffff
-
-%label L05
-add    si,bx
-push   si
-sub    si,bx
-jmp    L07
-
+%label L00
+mov    bx,*h1000
+add    bx,dx
+mov    cl,*bx
+cmp    cl,h23
+je     inp
+mov    cl,h40
+mov    *bx,cl
+mov    *h1000,bx
+sub    bx,dx
+mov    cl,h23
+mov    *bx,cl
+mov    dx,ax
+jmp    inp
 
 
 
