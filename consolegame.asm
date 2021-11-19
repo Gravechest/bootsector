@@ -87,44 +87,77 @@ jmp    movement
 mov    cl,hff
 
 %label movement
+mov    eax,*$wurm
+mov    $dir,cl
 mov    ebx,$map
-mov    al,*$wurm
 add    bl,al
+mov    dl,32
+mov    *ebx,dl
+sub    bl,al
 add    al,cl
 mov    $wurm,al
-mov    al,32
-mov    *ebx,al
+mov    dl,*$size
+mov    eax,$wurm
+add    al,dl
+
+%label itt1
+cmp    dl,0
+je     render
+dec    eax
+mov    cl,*eax
+push   edx
+mov    ebx,$map
+mov    dl,64
+add    ebx,ecx
+mov    *ebx,dl
+mov    ebx,$map
+inc    eax
+mov    *eax,cl
+mov    dl,32
 add    bl,cl
-mov    al,35
-cmp    *ebx,al
+mov    *ebx,dl
+pop    edx
+dec    eax
+dec    edx
+jmp    itt1
+
+%label render
+mov    eax,$wurm
+mov    dl,*$size
+mov    cl,*eax
+add    bl,cl
+mov    cl,35
+cmp    *ebx,cl
 je     exit
-mov    al,70
-cmp    *ebx,al
-jne    con
-mov    edx,*$size
-inc    edx
-mov    $size,edx
+mov    cl,70
+cmp    *ebx,cl
+je     food
+mov    cl,64
+mov    *ebx,cl
+mov    eax,$wurm
+jmp    print
+
+%label exit
+ret
+
+%label food
+mov    al,*$size
+inc    eax
+mov    $size,al
 push   ebx
 call   rndfood
 pop    ebx
+jmp    print
 
-%label con
-mov    al,64
-mov    *ebx,al
-mov    $dir,cl
-mov    ebx,$wurm
-mov    cl,*$size
-add    bl,cl
 
-%label update
-cmp    cl,0
-je     print
-dec    bl
-mov    al,*ebx
-inc    bl
-mov    *ebx,al
-dec    bl
-dec    cl
-jmp    update
 
-%label exit
+
+
+
+
+
+
+
+
+
+
