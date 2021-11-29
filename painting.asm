@@ -5,6 +5,7 @@
 %lib   KERNEL32
 %func  GetModuleHandleA
 %func  ExitProcess
+%func  Sleep
 
 %lib   USER32
 %func  RegisterClassA
@@ -16,9 +17,6 @@
 %func  PeekMessageA	
 %func  GetDC
 %func  FillRect
-
-%lib   GDI32
-%func  SetPixelV
 
 %var   style         4  0
 %var   lpfnWndProc   4  0
@@ -36,12 +34,12 @@
 %var   msg           32 0
 %var   rect1         4  0
 %var   rect2         4  0
-%var   rect3         4  50
-%var   rect4         4  50
+%var   rect3         4  64
+%var   rect4         4  64
+%var   dir           4  64
 
 %var   name1 "window"
 %var   name2 "debug.txt"
-
 
 push   0
 call   GetModuleHandleA 
@@ -72,15 +70,21 @@ call   GetDC
 mov    esi,eax
 
 %label inf
+push   100
+call   Sleep
+push   0
+push   0
 push   3
 push   $rect1
 push   esi
 call   FillRect
-mov    eax,*$rect3
-inc    eax
-cmp    eax,200
+mov    ebx,*$dir
+movzx  edx,bh
+shr    edx,8
+and    ebx,hff
+mov    eax,*$rect1
+mov    ecx,*$rect2
 
-mov    $rect3,eax
 push   0
 push   0
 push   0
@@ -116,20 +120,3 @@ call   DefWindowProcA
 mov    esp,ebp
 pop    ebp
 ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
