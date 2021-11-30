@@ -17,9 +17,10 @@
 %func  PeekMessageA	
 %func  GetDC
 %func  FillRect
+%func  GetKeyState
 
 %var   style         4  0
-%var   lpfnWndProc   4  0
+%var   lpfnWndProc   4  ~proc
 %var   cbClsExtra    4  0
 %var   cbWndExtra    4  0
 %var   hInstance     4  0
@@ -36,33 +37,33 @@
 %var   rect2         4  0
 %var   rect3         4  64
 %var   rect4         4  64
-%var   dir           4  64
+%var   dirx          1  64
+%var   diry          1  0 
 
 %var   name1 "window"
 %var   name2 "debug.txt"
 
-push   0
+xor    ebx,ebx
+push   ebx
 call   GetModuleHandleA 
 mov    $hInstance,eax
 mov    eax,$name1
 mov    $lpszMenuName,eax
 mov    $lpszClassName,eax
-mov    eax,~proc
-mov    $lpfnWndProc,eax
 push   $style
 call   RegisterClassA
-push   0
+push   ebx
 push   $hInstance
-push   0
-push   0
-push   h200
+push   ebx
+push   ebx
+push   h300
 push   h500
 push   h100
 push   h100
 push   h10080000
 push   $name1
 push   $name1
-push   0
+push   ebx
 call   CreateWindowExA
 mov    $hwnd,eax
 push   eax
@@ -70,21 +71,72 @@ call   GetDC
 mov    esi,eax
 
 %label inf
-push   100
+push   300
 call   Sleep
+push   h53
+call   GetKeyState
+test   al,h80
+jne    skey
+push   h57
+call   GetKeyState
+test   al,h80
+jne    wkey
+push   h44
+call   GetKeyState
+test   al,h80
+jne    dkey
+push   h41
+call   GetKeyState
+test   al,h80
+jne    akey
+mov    bl,*$dirx
+mov    dl,*$diry
+jmp    nomovement
+
+%label dkey
+mov    ebx,h40
+mov    edx,0
+jmp    movement
+
+%label akey
+mov    ebx,hffffffc0
+mov    edx,0
+jmp    movement
+
+%label wkey
+mov    ebx,0
+mov    edx,hffffffc0
+jmp    movement
+
+%label skey
+mov    ebx,0
+mov    edx,h40
+
+%label movement
+mov    $dirx,bl
+mov    $diry,dl
+
+%label nomovement
+push   edx
 push   0
-push   0
+push   $rect1
+push   esi
+call   FillRect
+pop    edx
+mov    eax,*$rect1
+mov    ecx,*$rect2
+add    eax,ebx
+add    ecx,edx
+mov    $rect1,eax
+mov    $rect2,ecx
+add    eax,64
+add    ecx,64
+mov    $rect3,eax
+mov    $rect4,ecx
 push   3
 push   $rect1
 push   esi
 call   FillRect
-mov    ebx,*$dir
-movzx  edx,bh
-shr    edx,8
-and    ebx,hff
-mov    eax,*$rect1
-mov    ecx,*$rect2
-
 push   0
 push   0
 push   0
