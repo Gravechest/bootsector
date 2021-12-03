@@ -1,5 +1,5 @@
 %console
-%name epic
+%name epict
 
 %lib   KERNEL32
 %func  GetModuleHandleA
@@ -21,7 +21,7 @@
 %lib   GDI32
 %func  StretchDIBits
 
-%var   name1 "T3"
+%var   name1 "T4"
 
 %var   style         4  0
 %var   lpfnWndProc   4  ~proc
@@ -45,13 +45,13 @@
 %var   bit.width     4  8
 %var   bit.height    4  8
 %var   bit.planes    2  1
-%var   bit.bitcount  2  24
+%var   bit.bitcount  2  16
 %var   bit           28 0
 
 xor    edi,edi
 call   GetProcessHeap
-push   750000
-push   edi
+push   128
+push   8	
 push   eax
 call   HeapAlloc
 mov    $texture,eax
@@ -130,14 +130,12 @@ cmp    al,0
 je     fill
 xor    eax,eax
 mov    *ebx,ax
-mov    *ebx+2,al
-add    ebx,3
+add    ebx,2
 jmp    itt
 
 %label fill
 mov    ax,hffff
 mov    *ebx,ax
-mov    *ebx+2,al
 jmp    alg
 
 %label proc
