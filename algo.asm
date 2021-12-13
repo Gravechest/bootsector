@@ -21,7 +21,7 @@
 %lib   GDI32
 %func  StretchDIBits
 
-%var   name1 "T4"
+%var   name1 "T5"
 
 %var   style         4  0
 %var   lpfnWndProc   4  ~proc
@@ -122,21 +122,22 @@ call   DispatchMessageA
 jmp    inf
 
 %label alg
+mov    dx,hffff
+xor    cx,cx
+
+%label begin
 mov    ebx,*$texture
 
 %label itt
-mov    al,*ebx
-cmp    al,0
+cmp    *ebx,cx
 je     fill
-xor    eax,eax
-mov    *ebx,ax
+mov    *ebx,cx
 add    ebx,2
 jmp    itt
 
 %label fill
-mov    ax,hffff
-mov    *ebx,ax
-jmp    alg
+mov    *ebx,dx
+jmp    begin
 
 %label proc
 push   ebp
